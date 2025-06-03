@@ -71,7 +71,7 @@ function addToRecent(article) {
   // Add new article to the front
   recent.unshift(article);
   // Limit recent list to max 10 items
-  if (recent.length > 10) {
+  if (recent.length > 5) {
     recent = recent.slice(0, 5);
   }
   localStorage.setItem("recent", JSON.stringify(recent));
