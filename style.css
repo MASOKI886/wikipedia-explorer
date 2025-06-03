@@ -1,91 +1,12 @@
-body {
-  background-color: #121212;
-  color: #e0e0e0;
-  font-family: system-ui, sans-serif;
+body, html {
   margin: 0;
   padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #121212;
+  color: #eee;
+  min-height: 100vh;
   display: flex;
   justify-content: center;
-}
-
-.container {
-  max-width: 600px;
-  padding: 2rem;
-  text-align: center;
-}
-
-h1 {
-  font-size: 2rem;
-}
-
-.controls {
-  margin: 1rem 0;
-}
-
-select, button {
-  padding: 0.5rem;
-  margin: 0.5rem;
-  border: none;
-  border-radius: 6px;
-  font-size: 1rem;
-}
-
-button {
-  background-color: #64b5f6;
-  color: #121212;
-  cursor: pointer;
-}
-
-button:hover {
-  background-color: #42a5f5;
-}
-
-#article {
-  background-color: #1e1e1e;
-  padding: 1rem;
-  border-radius: 8px;
-  margin-bottom: 1rem;
-}
-
-#article a {
-  color: #64b5f6;
-  text-decoration: none;
-}
-
-ul {
-  list-style: none;
-  padding-left: 0;
-}
-
-li {
-  margin-bottom: 0.5rem;
-}
-
-li a {
-  color: #90caf9;
-  text-decoration: none;
-}
-
-.deleteBtn {
-  background: transparent;
-  border: none;
-  color: #f44336;
-  cursor: pointer;
-  font-size: 1rem;
-  margin-left: 0.5rem;
-  vertical-align: middle;
-}
-
-.deleteBtn:hover {
-  color: #e57373;
-}
-
-/* Responsive layout */
-body, html {
-  margin: 0; padding: 0; font-family: Arial, sans-serif;
-  background-color: #121212; color: #eee;
-  min-height: 100vh;
-  display: flex; justify-content: center; align-items: flex-start;
 }
 
 .container {
@@ -124,10 +45,10 @@ button, select {
   background-color: #333;
   color: #eee;
   cursor: pointer;
-  transition: background-color 0.2s ease;
 }
 
-button:hover, select:hover, button:focus, select:focus {
+button:hover, select:hover,
+button:focus, select:focus {
   background-color: #555;
   outline: 2px solid #90caf9;
   outline-offset: 2px;
@@ -138,7 +59,6 @@ button:hover, select:hover, button:focus, select:focus {
   padding: 1rem;
   border-radius: 6px;
   margin-bottom: 1rem;
-  min-height: 150px;
   line-height: 1.5;
   font-size: 1.1rem;
 }
@@ -148,12 +68,11 @@ button:hover, select:hover, button:focus, select:focus {
   text-decoration: none;
 }
 
-#article a:hover, #article a:focus {
+#article a:hover,
+#article a:focus {
   text-decoration: underline;
-  outline: none;
 }
 
-/* Favorites list */
 #favoritesList {
   list-style: none;
   padding: 0;
@@ -164,29 +83,19 @@ button:hover, select:hover, button:focus, select:focus {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 1rem;
 }
 
 #favoritesList li a {
-  flex-grow: 1;
   color: #90caf9;
   text-decoration: none;
 }
 
-#favoritesList li a:hover, #favoritesList li a:focus {
-  text-decoration: underline;
-  outline: none;
-}
-
-/* Delete button styling */
 .deleteBtn {
   background: transparent;
   border: none;
   color: #f44336;
   cursor: pointer;
   font-size: 1rem;
-  margin-left: 0.5rem;
-  vertical-align: middle;
 }
 
 .deleteBtn:hover, .deleteBtn:focus {
@@ -194,19 +103,28 @@ button:hover, select:hover, button:focus, select:focus {
   outline: none;
 }
 
-/* Share buttons styling */
-#shareButtons button {
-  margin-right: 0.5rem;
-}
-
-/* Responsive for smaller devices */
 @media (max-width: 480px) {
   .controls {
     flex-direction: column;
-    gap: 0.7rem;
   }
   .controls > * {
     max-width: 100%;
   }
 }
 
+.share-buttons {
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.share-buttons a {
+  margin: 0 0.5rem;
+  color: #90caf9;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+.share-buttons a:hover,
+.share-buttons a:focus {
+  text-decoration: underline;
+}
