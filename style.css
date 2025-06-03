@@ -50,9 +50,10 @@ select:hover, button:hover {
 
 /* Link wrapper centers the read full article button/link */
 .link-wrapper {
-  text-align: center;
+  text-align: center;    /* centers inline/inline-block children */
   margin-top: 1rem;
   margin-bottom: 1.5rem;
+  width: 100%;           /* full width so centering works */
 }
 
 .article-link {
@@ -220,4 +221,8 @@ h1 {
 #clearFavoritesBtn {
   display: block;
   margin: 1rem auto;
+}
+
+#article {
+  width: 100%;
 }
