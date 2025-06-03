@@ -202,3 +202,22 @@ li {
 h1 {
   text-align: center;
 }
+
+h1 {
+  text-align: center;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+#saveArticle,
+#clearFavoritesBtn {
+  display: block;
+  margin: 1rem auto;
+}
