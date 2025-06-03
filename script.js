@@ -66,9 +66,14 @@ function saveCurrentArticle() {
 
 function addToRecent(article) {
   let recent = JSON.parse(localStorage.getItem("recent") || "[]");
+  // Remove duplicate if exists
   recent = recent.filter(a => a.pageid !== article.pageid);
+  // Add new article to the front
   recent.unshift(article);
-  if (recent.length > 10) recent.pop();
+  // Limit recent list to max 10 items
+  if (recent.length > 10) {
+    recent = recent.slice(0, 5);
+  }
   localStorage.setItem("recent", JSON.stringify(recent));
   updateRecentList();
 }
