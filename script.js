@@ -82,13 +82,31 @@ function saveCurrentArticle() {
   }
 }
 
+function deleteFavorite(pageid) {
+  let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+  favorites = favorites.filter(a => a.pageid !== pageid);
+  localStorage.setItem("favorites", JSON.stringify(favorites));
+  updateFavoritesList();
+}
+
 function updateFavoritesList() {
   let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
   favoritesList.innerHTML = "";
   favorites.forEach(article => {
     const li = document.createElement("li");
-    li.innerHTML = `<a href="https://en.wikipedia.org/?curid=${article.pageid}" target="_blank">${article.title}</a>`;
+    li.innerHTML = `
+      <a href="https://en.wikipedia.org/?curid=${article.pageid}" target="_blank">${article.title}</a> 
+      <button class="deleteBtn" data-id="${article.pageid}" title="Remove from favorites">❌</button>
+    `;
     favoritesList.appendChild(li);
+  });
+
+  // Attach delete event listeners
+  document.querySelectorAll(".deleteBtn").forEach(btn => {
+    btn.addEventListener("click", e => {
+      const id = Number(e.target.getAttribute("data-id"));
+      deleteFavorite(id);
+    });
   });
 }
 
