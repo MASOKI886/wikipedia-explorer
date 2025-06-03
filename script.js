@@ -1,80 +1,62 @@
 const articleDiv = document.getElementById("article");
 const loadBtn = document.getElementById("loadArticle");
-const surpriseBtn = document.getElementById("surpriseBtn");
 const saveBtn = document.getElementById("saveArticle");
 const categorySelect = document.getElementById("category");
 const favoritesList = document.getElementById("favoritesList");
+const recentList = document.getElementById("recentList");
 
 let currentArticle = null;
 
-const curatedCategories = [
-  "History",
-  "Science",
-  "Art",
-  "Philosophy",
-  "Unusual_articles",
-  "Inventions",
-  "Mythology",
-  "Food_and_drink"
-];
-
-async function loadArticle(category = "") {
+async function loadArticle() {
   articleDiv.innerHTML = "<p>Loading...</p>";
+  const selectedCategory = categorySelect.value;
 
-  if (category) {
-    const url = `https://en.wikipedia.org/w/api.php?action=query&list=categorymembers&cmtitle=Category:${category}&cmlimit=50&format=json&origin=*`;
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
-      const pages = data.query.categorymembers;
-      const randomPage = pages[Math.floor(Math.random() * pages.length)];
-      fetchArticleByTitle(randomPage.title);
-    } catch (err) {
-      articleDiv.innerHTML = "<p>Could not load category. Try again.</p>";
-    }
+  if (selectedCategory) {
+    const url = `https://en.wikipedia.org/w/api.php?action=query&list=categorymembers&cmtitle=Category:${selectedCategory}&cmlimit=50&format=json&origin=*`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const pages = data.query.categorymembers;
+    const randomPage = pages[Math.floor(Math.random() * pages.length)];
+    fetchArticleByTitle(randomPage.title);
   } else {
-    const url = "https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&prop=extracts&exintro&explaintext&format=json&origin=*";
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
-      const page = Object.values(data.query.pages)[0];
-      showArticle(page);
-    } catch (err) {
-      articleDiv.innerHTML = "<p>Error loading article. Try again.</p>";
-    }
+    const url = "https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&prop=extracts|pageimages&piprop=thumbnail&pithumbsize=500&exintro&explaintext&format=json&origin=*";
+    const res = await fetch(url);
+    const data = await res.json();
+    const page = Object.values(data.query.pages)[0];
+    showArticle(page);
   }
 }
 
 async function fetchArticleByTitle(title) {
-  const api = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=extracts&exintro&explaintext&format=json&origin=*`;
-  try {
-    const res = await fetch(api);
-    const data = await res.json();
-    const page = Object.values(data.query.pages)[0];
-    showArticle(page);
-  } catch (err) {
-    articleDiv.innerHTML = "<p>Error fetching article.</p>";
-  }
+  const api = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=extracts|pageimages&piprop=thumbnail&pithumbsize=500&exintro&explaintext&format=json&origin=*`;
+  const res = await fetch(api);
+  const data = await res.json();
+  const page = Object.values(data.query.pages)[0];
+  showArticle(page);
 }
 
 function showArticle(page) {
   currentArticle = {
     title: page.title,
     extract: page.extract,
-    pageid: page.pageid
+    pageid: page.pageid,
+    thumbnail: page.thumbnail?.source || null
   };
 
-  articleDiv.innerHTML = `
-    <h2>${page.title}</h2>
-    <p>${page.extract}</p>
-    <p><a href="https://en.wikipedia.org/?curid=${page.pageid}" target="_blank">🔗 Read full article</a></p>
-  `;
+  let html = `<h2>${page.title}</h2>`;
+  if (page.thumbnail) {
+    html += `<img src="${page.thumbnail.source}" alt="Thumbnail of ${page.title}" />`;
+  }
+  html += `<p>${page.extract}</p>`;
+  html += `<p><a href="https://en.wikipedia.org/?curid=${page.pageid}" target="_blank">🔗 Read full article</a></p>`;
+  articleDiv.innerHTML = html;
+
+  addToRecent(currentArticle);
 }
 
 function saveCurrentArticle() {
   if (!currentArticle) return;
   let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
-
   if (!favorites.find(a => a.pageid === currentArticle.pageid)) {
     favorites.push(currentArticle);
     localStorage.setItem("favorites", JSON.stringify(favorites));
@@ -82,45 +64,50 @@ function saveCurrentArticle() {
   }
 }
 
-function deleteFavorite(pageid) {
-  let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
-  favorites = favorites.filter(a => a.pageid !== pageid);
-  localStorage.setItem("favorites", JSON.stringify(favorites));
-  updateFavoritesList();
+function addToRecent(article) {
+  let recent = JSON.parse(localStorage.getItem("recent") || "[]");
+  recent = recent.filter(a => a.pageid !== article.pageid);
+  recent.unshift(article);
+  if (recent.length > 10) recent.pop();
+  localStorage.setItem("recent", JSON.stringify(recent));
+  updateRecentList();
 }
 
 function updateFavoritesList() {
-  let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+  const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
   favoritesList.innerHTML = "";
   favorites.forEach(article => {
     const li = document.createElement("li");
     li.innerHTML = `
-      <a href="https://en.wikipedia.org/?curid=${article.pageid}" target="_blank">${article.title}</a> 
-      <button class="deleteBtn" data-id="${article.pageid}" title="Remove from favorites">❌</button>
+      <a href="https://en.wikipedia.org/?curid=${article.pageid}" target="_blank">${article.title}</a>
+      <button class="remove-button" onclick="removeFavorite(${article.pageid})">🗑</button>
     `;
     favoritesList.appendChild(li);
   });
+}
 
-  // Attach delete event listeners
-  document.querySelectorAll(".deleteBtn").forEach(btn => {
-    btn.addEventListener("click", e => {
-      const id = Number(e.target.getAttribute("data-id"));
-      deleteFavorite(id);
-    });
+function updateRecentList() {
+  const recent = JSON.parse(localStorage.getItem("recent") || "[]");
+  recentList.innerHTML = "";
+  recent.forEach(article => {
+    const li = document.createElement("li");
+    li.innerHTML = `<a href="https://en.wikipedia.org/?curid=${article.pageid}" target="_blank">${article.title}</a>`;
+    recentList.appendChild(li);
   });
 }
 
-function surpriseMe() {
-  const randomCategory = curatedCategories[Math.floor(Math.random() * curatedCategories.length)];
-  categorySelect.value = randomCategory;
-  loadArticle(randomCategory);
+function removeFavorite(id) {
+  let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+  favorites = favorites.filter(article => article.pageid !== id);
+  localStorage.setItem("favorites", JSON.stringify(favorites));
+  updateFavoritesList();
 }
 
-// Event Listeners
-loadBtn.addEventListener("click", () => loadArticle(categorySelect.value));
-surpriseBtn.addEventListener("click", surpriseMe);
+// Load on startup
+loadBtn.addEventListener("click", loadArticle);
 saveBtn.addEventListener("click", saveCurrentArticle);
 document.addEventListener("DOMContentLoaded", () => {
   loadArticle();
   updateFavoritesList();
+  updateRecentList();
 });
