@@ -25,7 +25,7 @@ const categories = {
 // Fetch random article from category by searching pages
 async function fetchRandomArticle(category) {
   try {
-    const url = `https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=categorymembers&gcmtitle=Category:${encodeURIComponent(category)}&gcmtype=page&gcmlimit=50&prop=extracts|pageimages&exintro=1&piprop=thumbnail&pithumbsize=300&explaintext=1`;
+const url = `https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&generator=categorymembers&gcmtitle=Category:${encodeURIComponent(category)}&gcmtype=page&gcmlimit=50&prop=extracts|pageimages&exintro=1&piprop=thumbnail&pithumbsize=300&explaintext=1`;
     const response = await fetch(url);
     const data = await response.json();
     if (!data.query) {
