@@ -11,20 +11,22 @@
     <h1>📚 Wiki Explorer</h1>
 
     <div class="controls">
-      <select id="categorySelect" aria-label="Select category"></select>
+      <select id="categorySelect" aria-label="Select category">
+        <option value="">-- Choose a Category --</option>
+      </select>
       <button id="newArticle">🆕 New Article</button>
     </div>
 
     <div id="article" role="region" aria-live="polite"></div>
-
     <button id="saveFavorite">⭐ Save to Favorites</button>
 
-    <!-- Share Buttons -->
     <div id="shareButtons" class="share-buttons">
       <p>🔗 Share this article:</p>
       <a id="shareX" target="_blank" rel="noopener">X</a>
-      <a id="shareReddit" target="_blank" rel="noopener">Reddit</a>
       <a id="shareFacebook" target="_blank" rel="noopener">Facebook</a>
+      <a id="shareWhatsApp" target="_blank" rel="noopener">WhatsApp</a>
+      <button id="copyLink">📋 Copy Link</button>
+      <span id="copyConfirm" hidden>✅ Copied!</span>
     </div>
 
     <h2>⭐ Favorites</h2>
