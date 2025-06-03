@@ -48,7 +48,7 @@ function showArticle(page) {
     html += `<img src="${page.thumbnail.source}" alt="Thumbnail of ${page.title}" />`;
   }
   html += `<p>${page.extract}</p>`;
-  html += `<p><a href="https://en.wikipedia.org/?curid=${page.pageid}" target="_blank">🔗 Read full article</a></p>`;
+html += `<p><a class="article-link" href="https://en.wikipedia.org/?curid=${page.pageid}" target="_blank">🔗 Read full article</a></p>`;
   articleDiv.innerHTML = html;
 
   addToRecent(currentArticle);
