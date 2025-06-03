@@ -8,28 +8,25 @@
 </head>
 <body>
   <div class="container">
-    <h1>📚 Wiki Explorer</h1>
+    <h1>🌍 Wiki Explorer</h1>
 
     <div class="controls">
-      <select id="categorySelect" aria-label="Select category">
-        <option value="">-- Choose a Category --</option>
+      <label for="category">Choose a category:</label>
+      <select id="category">
+        <option value="">🎲 Random</option>
+        <option value="History">📜 History</option>
+        <option value="Science">🔬 Science</option>
+        <option value="Technology">💻 Technology</option>
+        <option value="Art">🎨 Art</option>
+        <option value="Philosophy">🧠 Philosophy</option>
       </select>
-      <button id="newArticle">🆕 New Article</button>
+      <button id="loadArticle">🔁 New Article</button>
     </div>
 
-    <div id="article" role="region" aria-live="polite"></div>
-    <button id="saveFavorite">⭐ Save to Favorites</button>
+    <div id="article"><p>Loading...</p></div>
+    <button id="saveArticle">⭐ Save to Favorites</button>
 
-    <div id="shareButtons" class="share-buttons">
-      <p>🔗 Share this article:</p>
-      <a id="shareX" target="_blank" rel="noopener">X</a>
-      <a id="shareFacebook" target="_blank" rel="noopener">Facebook</a>
-      <a id="shareWhatsApp" target="_blank" rel="noopener">WhatsApp</a>
-      <button id="copyLink">📋 Copy Link</button>
-      <span id="copyConfirm" hidden>✅ Copied!</span>
-    </div>
-
-    <h2>⭐ Favorites</h2>
+    <h2>⭐ My Favorites</h2>
     <ul id="favoritesList"></ul>
   </div>
 
