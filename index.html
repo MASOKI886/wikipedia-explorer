@@ -8,41 +8,26 @@
 </head>
 <body>
   <div class="container">
-    <h1>🌍 Wiki Explorer</h1>
+    <h1>📚 Wiki Explorer</h1>
 
     <div class="controls">
-      <label for="category">Choose a category:</label>
-      <select id="category">
-        <option value="">🎲 Random</option>
-        <option value="History">📜 History</option>
-        <option value="Science">🔬 Science</option>
-        <option value="Art">🎨 Art & Artists</option>
-        <option value="Philosophy">🧠 Philosophy</option>
-        <option value="Unusual_articles">🧪 Strange Facts</option>
-        <option value="Inventions">⚙️ Inventions</option>
-        <option value="Mythology">🐉 Mythology</option>
-        <option value="Food_and_drink">🍜 Food & Drink</option>
-      </select>
-      <button id="loadArticle">🔁 New Article</button>
-      <button id="surpriseBtn">🎯 Surprise Me</button>
-      <button id="reloadDaily">🔄 Refresh Daily Article</button>
-
+      <select id="categorySelect" aria-label="Select category"></select>
+      <button id="newArticle">🆕 New Article</button>
     </div>
 
-    <div id="article"><p>Loading...</p></div>
+    <div id="article" role="region" aria-live="polite"></div>
 
-    <div id="shareButtons" aria-label="Share article" role="region" style="margin:1rem 0; display:none;">
-  <button id="fbShare" aria-label="Share on Facebook">📘 Facebook</button>
-  <button id="twShare" aria-label="Share on Twitter">🐦 Twitter</button>
-  <button id="waShare" aria-label="Share on WhatsApp">📱 WhatsApp</button>
-  <button id="copyLink" aria-label="Copy article link to clipboard">📋 Copy Link</button>
-  <span id="copyFeedback" role="alert" style="color:green; margin-left:0.5rem; display:none;">Copied!</span>
-</div>
+    <button id="saveFavorite">⭐ Save to Favorites</button>
 
-    
-    <button id="saveArticle">⭐ Save to Favorites</button>
+    <!-- Share Buttons -->
+    <div id="shareButtons" class="share-buttons">
+      <p>🔗 Share this article:</p>
+      <a id="shareX" target="_blank" rel="noopener">X</a>
+      <a id="shareReddit" target="_blank" rel="noopener">Reddit</a>
+      <a id="shareFacebook" target="_blank" rel="noopener">Facebook</a>
+    </div>
 
-    <h2>⭐ My Favorites</h2>
+    <h2>⭐ Favorites</h2>
     <ul id="favoritesList"></ul>
   </div>
 
