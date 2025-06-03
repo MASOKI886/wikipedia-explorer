@@ -9,10 +9,28 @@
 <body>
   <div class="container">
     <h1>🌍 Wiki Explorer</h1>
-    <div id="article">
-      <p>Loading a random article...</p>
+
+    <div class="controls">
+      <label for="category">Choose a category:</label>
+      <select id="category">
+        <option value="">🎲 Random</option>
+        <option value="History">📜 History</option>
+        <option value="Science">🔬 Science</option>
+        <option value="Art">🎨 Art & Artists</option>
+        <option value="Philosophy">🧠 Philosophy</option>
+        <option value="Unusual_articles">🧪 Strange Facts</option>
+        <option value="Inventions">⚙️ Inventions</option>
+        <option value="Mythology">🐉 Mythology</option>
+        <option value="Food_and_drink">🍜 Food & Drink</option>
+</select>
+      <button id="loadArticle">🔁 New Article</button>
     </div>
-    <button id="newArticle">🔁 New Article</button>
+
+    <div id="article"><p>Loading...</p></div>
+    <button id="saveArticle">⭐ Save to Favorites</button>
+
+    <h2>⭐ My Favorites</h2>
+    <ul id="favoritesList"></ul>
   </div>
 
   <script src="script.js"></script>
