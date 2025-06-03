@@ -1,202 +1,125 @@
 const articleDiv = document.getElementById("article");
-const loadBtn = document.getElementById("loadArticle");
-const surpriseBtn = document.getElementById("surpriseBtn");
-const saveBtn = document.getElementById("saveArticle");
-const categorySelect = document.getElementById("category");
+const categorySelect = document.getElementById("categorySelect");
+const newArticleBtn = document.getElementById("newArticle");
+const saveFavoriteBtn = document.getElementById("saveFavorite");
 const favoritesList = document.getElementById("favoritesList");
-const reloadDailyBtn = document.getElementById("reloadDaily");
+
+const categories = {
+  "Philosophy": "Category:Philosophy",
+  "Science": "Category:Science",
+  "History": "Category:History",
+  "Psychology": "Category:Psychology",
+  "Technology": "Category:Technology",
+  "Mathematics": "Category:Mathematics",
+  "Art": "Category:Art"
+};
 
 let currentArticle = null;
 
-const curatedCategories = [
-  "History",
-  "Science",
-  "Art",
-  "Philosophy",
-  "Unusual_articles",
-  "Inventions",
-  "Mythology",
-  "Food_and_drink"
-];
-
-async function loadArticle(category = "") {
-  articleDiv.innerHTML = "<p>Loading...</p>";
-
-  if (category) {
-    const url = `https://en.wikipedia.org/w/api.php?action=query&list=categorymembers&cmtitle=Category:${category}&cmlimit=50&format=json&origin=*`;
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
-      const pages = data.query.categorymembers;
-      const randomPage = pages[Math.floor(Math.random() * pages.length)];
-      fetchArticleByTitle(randomPage.title);
-    } catch (err) {
-      articleDiv.innerHTML = "<p>Could not load category. Try again.</p>";
-    }
-  } else {
-    const url = "https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&prop=extracts&exintro&explaintext&format=json&origin=*";
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
-      const page = Object.values(data.query.pages)[0];
-      showArticle(page);
-    } catch (err) {
-      articleDiv.innerHTML = "<p>Error loading article. Try again.</p>";
-    }
+function populateCategories() {
+  for (const name in categories) {
+    const opt = document.createElement("option");
+    opt.value = categories[name];
+    opt.textContent = name;
+    categorySelect.appendChild(opt);
   }
 }
 
-async function fetchArticleByTitle(title) {
-  const api = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(title)}&prop=extracts&exintro&explaintext&format=json&origin=*`;
-  try {
-    const res = await fetch(api);
-    const data = await res.json();
-    const page = Object.values(data.query.pages)[0];
-    showArticle(page);
-  } catch (err) {
-    articleDiv.innerHTML = "<p>Error fetching article.</p>";
-  }
+async function getRandomArticleFromCategory(category) {
+  const url = `https://en.wikipedia.org/w/api.php?action=query&format=json&list=categorymembers&cmtitle=${encodeURIComponent(category)}&cmlimit=500&origin=*`;
+  const res = await fetch(url);
+  const data = await res.json();
+  const pages = data.query.categorymembers.filter(p => p.ns === 0);
+  if (pages.length === 0) throw new Error("No articles in category.");
+  const page = pages[Math.floor(Math.random() * pages.length)];
+  return page;
 }
 
-function showArticle(page) {
-  currentArticle = {
-    title: page.title,
-    extract: page.extract,
-    pageid: page.pageid
-  };
+async function showArticle(page) {
+  const url = `https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro&explaintext&format=json&pageids=${page.pageid}&origin=*`;
+  const res = await fetch(url);
+  const data = await res.json();
+  const content = data.query.pages[page.pageid];
+  currentArticle = content;
 
   articleDiv.innerHTML = `
-    <h2>${page.title}</h2>
-    <p>${page.extract}</p>
-    <p><a href="https://en.wikipedia.org/?curid=${page.pageid}" target="_blank">🔗 Read full article</a></p>
+    <h2><a href="https://en.wikipedia.org/?curid=${page.pageid}" target="_blank" rel="noopener">${content.title}</a></h2>
+    <p>${content.extract || "No summary available."}</p>
   `;
 }
 
-function saveCurrentArticle() {
-  if (!currentArticle) return;
-  let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+async function loadArticle() {
+  const category = categorySelect.value;
+  if (!category) return;
+  try {
+    const page = await getRandomArticleFromCategory(category);
+    await showArticle(page);
+  } catch {
+    articleDiv.innerHTML = "<p>Could not load article.</p>";
+  }
+}
 
+function saveFavorite() {
+  if (!currentArticle) return;
+  const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
   if (!favorites.find(a => a.pageid === currentArticle.pageid)) {
-    favorites.push(currentArticle);
+    favorites.push({ title: currentArticle.title, pageid: currentArticle.pageid });
     localStorage.setItem("favorites", JSON.stringify(favorites));
     updateFavoritesList();
   }
 }
 
-function deleteFavorite(pageid) {
-  let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
-  favorites = favorites.filter(a => a.pageid !== pageid);
-  localStorage.setItem("favorites", JSON.stringify(favorites));
-  updateFavoritesList();
-}
-
 function updateFavoritesList() {
-  let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
+  const favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
   favoritesList.innerHTML = "";
   favorites.forEach(article => {
     const li = document.createElement("li");
-    li.innerHTML = `
-      <a href="https://en.wikipedia.org/?curid=${article.pageid}" target="_blank">${article.title}</a> 
-      <button class="deleteBtn" data-id="${article.pageid}" title="Remove from favorites">❌</button>
-    `;
+    const link = document.createElement("a");
+    link.href = `https://en.wikipedia.org/?curid=${article.pageid}`;
+    link.target = "_blank";
+    link.rel = "noopener";
+    link.textContent = article.title;
+
+    const delBtn = document.createElement("button");
+    delBtn.textContent = "🗑️";
+    delBtn.className = "deleteBtn";
+    delBtn.setAttribute("aria-label", `Delete ${article.title} from favorites`);
+    delBtn.onclick = () => {
+      const updated = favorites.filter(a => a.pageid !== article.pageid);
+      localStorage.setItem("favorites", JSON.stringify(updated));
+      updateFavoritesList();
+    };
+
+    li.appendChild(link);
+    li.appendChild(delBtn);
     favoritesList.appendChild(li);
   });
-
-  // Attach delete event listeners
-  document.querySelectorAll(".deleteBtn").forEach(btn => {
-    btn.addEventListener("click", e => {
-      const id = Number(e.target.getAttribute("data-id"));
-      deleteFavorite(id);
-    });
-  });
 }
-
-function surpriseMe() {
-  const randomCategory = curatedCategories[Math.floor(Math.random() * curatedCategories.length)];
-  categorySelect.value = randomCategory;
-  loadArticle(randomCategory);
-}
-
-const shareDiv = document.getElementById("shareButtons");
-const fbShareBtn = document.getElementById("fbShare");
-const twShareBtn = document.getElementById("twShare");
-const waShareBtn = document.getElementById("waShare");
-const copyLinkBtn = document.getElementById("copyLink");
-const copyFeedback = document.getElementById("copyFeedback");
-
-
-// Event Listeners
-loadBtn.addEventListener("click", () => loadArticle(categorySelect.value));
-surpriseBtn.addEventListener("click", surpriseMe);
-saveBtn.addEventListener("click", saveCurrentArticle);
-
-// Show share buttons
-shareDiv.style.display = "block";
 
 document.addEventListener("DOMContentLoaded", () => {
-  loadArticle();
+  populateCategories();
   updateFavoritesList();
-  loadDailyArticle();
 });
 
-function getArticleUrl() {
-  return `https://en.wikipedia.org/?curid=${currentArticle.pageid}`;
+newArticleBtn.addEventListener("click", loadArticle);
+saveFavoriteBtn.addEventListener("click", saveFavorite);
+
+async function showArticle(page) {
+  const url = `https://en.wikipedia.org/w/api.php?action=query&prop=extracts&exintro&explaintext&format=json&pageids=${page.pageid}&origin=*`;
+  const res = await fetch(url);
+  const data = await res.json();
+  const content = data.query.pages[page.pageid];
+  currentArticle = content;
+
+  const wikiUrl = `https://en.wikipedia.org/?curid=${page.pageid}`;
+
+  articleDiv.innerHTML = `
+    <h2><a href="${wikiUrl}" target="_blank" rel="noopener">${content.title}</a></h2>
+    <p>${content.extract || "No summary available."}</p>
+  `;
+
+  // Update share links
+  document.getElementById("shareX").href = `https://x.com/intent/tweet?url=${encodeURIComponent(wikiUrl)}&text=${encodeURIComponent(content.title)} via Wiki Explorer`;
+  document.getElementById("shareReddit").href = `https://www.reddit.com/submit?url=${encodeURIComponent(wikiUrl)}&title=${encodeURIComponent(content.title)}`;
+  document.getElementById("shareFacebook").href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(wikiUrl)}`;
 }
-
-fbShareBtn.addEventListener("click", () => {
-  const url = encodeURIComponent(getArticleUrl());
-  window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, "_blank", "width=600,height=400");
-});
-
-twShareBtn.addEventListener("click", () => {
-  const url = encodeURIComponent(getArticleUrl());
-  const text = encodeURIComponent(currentArticle.title);
-  window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, "_blank", "width=600,height=400");
-});
-
-waShareBtn.addEventListener("click", () => {
-  const url = encodeURIComponent(getArticleUrl());
-  window.open(`https://api.whatsapp.com/send?text=${url}`, "_blank");
-});
-
-copyLinkBtn.addEventListener("click", async () => {
-  try {
-    await navigator.clipboard.writeText(getArticleUrl());
-    copyFeedback.style.display = "inline";
-    setTimeout(() => (copyFeedback.style.display = "none"), 1500);
-  } catch {
-    alert("Failed to copy link.");
-  }
-});
-
-function getTodayKey() {
-  const d = new Date();
-  return `dailyArticle_${d.getFullYear()}_${d.getMonth()+1}_${d.getDate()}`;
-}
-
-async function loadDailyArticle() {
-  const key = getTodayKey();
-  let daily = localStorage.getItem(key);
-  if (daily) {
-    daily = JSON.parse(daily);
-    showArticle(daily);
-  } else {
-    try {
-      // Load random article
-      const url = "https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&prop=extracts&exintro&explaintext&format=json&origin=*";
-      const res = await fetch(url);
-      const data = await res.json();
-      const page = Object.values(data.query.pages)[0];
-      localStorage.setItem(key, JSON.stringify(page));
-      showArticle(page);
-    } catch {
-      articleDiv.innerHTML = "<p>Failed to load daily article.</p>";
-    }
-  }
-}
-
-reloadDailyBtn.addEventListener("click", () => {
-  // Clear today's article cache and reload
-  localStorage.removeItem(getTodayKey());
-  loadDailyArticle();
-});
