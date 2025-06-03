@@ -4,6 +4,7 @@ const surpriseBtn = document.getElementById("surpriseBtn");
 const saveBtn = document.getElementById("saveArticle");
 const categorySelect = document.getElementById("category");
 const favoritesList = document.getElementById("favoritesList");
+const reloadDailyBtn = document.getElementById("reloadDaily");
 
 let currentArticle = null;
 
@@ -193,3 +194,9 @@ async function loadDailyArticle() {
     }
   }
 }
+
+reloadDailyBtn.addEventListener("click", () => {
+  // Clear today's article cache and reload
+  localStorage.removeItem(getTodayKey());
+  loadDailyArticle();
+});
