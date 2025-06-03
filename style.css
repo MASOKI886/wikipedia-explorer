@@ -76,3 +76,19 @@ li a {
   margin-left: 10px;
   cursor: pointer;
 }
+
+.article-link {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.6rem 1.2rem;
+  background-color: #2e7d32; /* Deep green */
+  color: #ffffff;
+  text-decoration: none;
+  font-weight: bold;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.article-link:hover {
+  background-color: #388e3c; /* Slightly brighter on hover */
+}
