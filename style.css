@@ -9,7 +9,7 @@ body {
 }
 
 .container {
-  max-width: 600px;
+  max-width: 700px;
   padding: 2rem;
   text-align: center;
 }
@@ -45,20 +45,23 @@ button:hover {
   padding: 1rem;
   border-radius: 8px;
   margin-bottom: 1rem;
+  text-align: left;
 }
 
-#article a {
-  color: #64b5f6;
-  text-decoration: none;
+#article img {
+  max-width: 100%;
+  margin-bottom: 1rem;
+  border-radius: 8px;
 }
 
 ul {
   list-style: none;
   padding-left: 0;
+  text-align: left;
 }
 
 li {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
 li a {
@@ -66,17 +69,10 @@ li a {
   text-decoration: none;
 }
 
-.deleteBtn {
-  background: transparent;
+.remove-button {
+  background: none;
   border: none;
   color: #f44336;
+  margin-left: 10px;
   cursor: pointer;
-  font-size: 1rem;
-  margin-left: 0.5rem;
-  vertical-align: middle;
 }
-
-.deleteBtn:hover {
-  color: #e57373;
-}
-
