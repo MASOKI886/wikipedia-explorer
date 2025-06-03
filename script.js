@@ -116,11 +116,80 @@ function surpriseMe() {
   loadArticle(randomCategory);
 }
 
+const shareDiv = document.getElementById("shareButtons");
+const fbShareBtn = document.getElementById("fbShare");
+const twShareBtn = document.getElementById("twShare");
+const waShareBtn = document.getElementById("waShare");
+const copyLinkBtn = document.getElementById("copyLink");
+const copyFeedback = document.getElementById("copyFeedback");
+
+
 // Event Listeners
 loadBtn.addEventListener("click", () => loadArticle(categorySelect.value));
 surpriseBtn.addEventListener("click", surpriseMe);
 saveBtn.addEventListener("click", saveCurrentArticle);
+
+// Show share buttons
+shareDiv.style.display = "block";
+
 document.addEventListener("DOMContentLoaded", () => {
   loadArticle();
   updateFavoritesList();
+  loadDailyArticle();
 });
+
+function getArticleUrl() {
+  return `https://en.wikipedia.org/?curid=${currentArticle.pageid}`;
+}
+
+fbShareBtn.addEventListener("click", () => {
+  const url = encodeURIComponent(getArticleUrl());
+  window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, "_blank", "width=600,height=400");
+});
+
+twShareBtn.addEventListener("click", () => {
+  const url = encodeURIComponent(getArticleUrl());
+  const text = encodeURIComponent(currentArticle.title);
+  window.open(`https://twitter.com/intent/tweet?url=${url}&text=${text}`, "_blank", "width=600,height=400");
+});
+
+waShareBtn.addEventListener("click", () => {
+  const url = encodeURIComponent(getArticleUrl());
+  window.open(`https://api.whatsapp.com/send?text=${url}`, "_blank");
+});
+
+copyLinkBtn.addEventListener("click", async () => {
+  try {
+    await navigator.clipboard.writeText(getArticleUrl());
+    copyFeedback.style.display = "inline";
+    setTimeout(() => (copyFeedback.style.display = "none"), 1500);
+  } catch {
+    alert("Failed to copy link.");
+  }
+});
+
+function getTodayKey() {
+  const d = new Date();
+  return `dailyArticle_${d.getFullYear()}_${d.getMonth()+1}_${d.getDate()}`;
+}
+
+async function loadDailyArticle() {
+  const key = getTodayKey();
+  let daily = localStorage.getItem(key);
+  if (daily) {
+    daily = JSON.parse(daily);
+    showArticle(daily);
+  } else {
+    try {
+      // Load random article
+      const url = "https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&prop=extracts&exintro&explaintext&format=json&origin=*";
+      const res = await fetch(url);
+      const data = await res.json();
+      const page = Object.values(data.query.pages)[0];
+      localStorage.setItem(key, JSON.stringify(page));
+      showArticle(page);
+    } catch {
+      articleDiv.innerHTML = "<p>Failed to load daily article.</p>";
+    }
+  }
+}
