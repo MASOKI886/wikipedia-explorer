@@ -42,7 +42,7 @@ function renderFavorites() {
 // Render recent list, max 20 items
 function renderRecent() {
   recentList.innerHTML = "";
-  const recentLimited = recent.slice(-20).reverse();
+  const recentLimited = recent.slice(-5).reverse();
   recentLimited.forEach(page => {
     const item = document.createElement("li");
     item.textContent = page.title;
