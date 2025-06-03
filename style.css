@@ -117,14 +117,23 @@ button:focus, select:focus {
   text-align: center;
 }
 
-.share-buttons a {
-  margin: 0 0.5rem;
+.share-buttons a, .share-buttons button {
+  margin: 0 0.4rem;
   color: #90caf9;
   font-weight: bold;
   text-decoration: none;
+  background: none;
+  border: none;
+  cursor: pointer;
 }
 
 .share-buttons a:hover,
-.share-buttons a:focus {
+.share-buttons button:hover {
   text-decoration: underline;
 }
+
+#copyConfirm {
+  color: #8bc34a;
+  margin-left: 0.5rem;
+}
+
