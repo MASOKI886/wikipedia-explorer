@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Wiki Explorer</title>
+  <title>Wikipedia Explorer</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="container">
-    <h1>🌍 Wiki Explorer</h1>
+    <h1>🌐 Wikipedia Explorer</h1>
 
     <div class="controls">
       <label for="category">Choose a category:</label>
@@ -23,23 +23,18 @@
         <option value="Mythology">🐉 Mythology</option>
         <option value="Food_and_drink">🍜 Food & Drink</option>
       </select>
-      <button id="loadArticle">🔁 New Article</button>
+      <button id="loadArticle">🔁 Load Article</button>
     </div>
 
-<div id="article"><p>Loading...</p></div>
-<button id="saveArticle">⭐ Save to Favorites</button>
+    <div id="article"><p>Loading...</p></div>
+    <button id="saveArticle">⭐ Save to Favorites</button>
 
-<h2>📅 Recently Viewed</h2>
-<ul id="recentList"></ul>
+    <h2>⭐ Favorites</h2>
+    <ul id="favoritesList"></ul>
 
-<div style="display: flex; align-items: center; gap: 12px; margin-top: 1rem; margin-bottom: 0.5rem;">
-  <h2 style="margin: 0;">⭐ My Favorites</h2>
-  <button id="clearFavoritesBtn" style="...">Clear Favorites</button>
-</div>
-
-
-<ul id="favoritesList"></ul>
-
+    <h2>📅 Recently Viewed</h2>
+    <ul id="recentList"></ul>
+  </div>
 
   <script src="script.js"></script>
 </body>
