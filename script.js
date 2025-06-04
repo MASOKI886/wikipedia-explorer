@@ -4,28 +4,30 @@ const saveBtn = document.getElementById("saveArticle");
 const categorySelect = document.getElementById("category");
 const favoritesList = document.getElementById("favoritesList");
 const recentList = document.getElementById("recentList");
+const themeToggleBtn = document.getElementById("toggleTheme");
+const shareBtn = document.getElementById("shareBtn");
 
 let currentArticle = null;
 
+// Load random or category article
 async function loadArticle() {
   articleDiv.innerHTML = "<p>Loading...</p>";
   let selectedCategory = categorySelect.value;
-  let url = "";
 
   if (selectedCategory) {
-    url = `https://en.wikipedia.org/w/api.php?action=query&list=categorymembers&cmtitle=Category:${selectedCategory}&cmlimit=50&format=json&origin=*`;
+    const url = `https://en.wikipedia.org/w/api.php?action=query&list=categorymembers&cmtitle=Category:${selectedCategory}&cmlimit=50&format=json&origin=*`;
     const res = await fetch(url);
     const data = await res.json();
     const pages = data.query.categorymembers;
-const filteredPages = pages.filter(p => !p.title.startsWith("Category:") && !p.title.startsWith("List of"));
-if (filteredPages.length === 0) {
-  articleDiv.innerHTML = "<p>No valid articles found in this category.</p>";
-  return;
-}
-const randomPage = filteredPages[Math.floor(Math.random() * filteredPages.length)];
-fetchArticleByTitle(randomPage.title);
+    const filteredPages = pages.filter(p => !p.title.startsWith("Category:") && !p.title.startsWith("List of"));
+    if (filteredPages.length === 0) {
+      articleDiv.innerHTML = "<p>No valid articles found in this category.</p>";
+      return;
+    }
+    const randomPage = filteredPages[Math.floor(Math.random() * filteredPages.length)];
+    fetchArticleByTitle(randomPage.title);
   } else {
-    url = `https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&prop=extracts|pageimages&piprop=thumbnail&pithumbsize=600&format=json&origin=*`;
+    const url = `https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&prop=extracts|pageimages&piprop=thumbnail&pithumbsize=600&format=json&origin=*`;
     const res = await fetch(url);
     const data = await res.json();
     const page = Object.values(data.query.pages)[0];
@@ -92,9 +94,9 @@ function removeFromFavorites(pageid) {
 
 function addToRecentlyViewed(article) {
   let recent = JSON.parse(localStorage.getItem("recent") || "[]");
-  recent = recent.filter(a => a.pageid !== article.pageid); // remove duplicates
-  recent.unshift(article); // add to front
-  if (recent.length > 10) recent = recent.slice(0, 10); // limit to 10
+  recent = recent.filter(a => a.pageid !== article.pageid);
+  recent.unshift(article);
+  if (recent.length > 10) recent = recent.slice(0, 10);
   localStorage.setItem("recent", JSON.stringify(recent));
   updateRecentList();
 }
@@ -109,7 +111,43 @@ function updateRecentList() {
   });
 }
 
-// Event Listeners
+// Theme toggle
+function setTheme(mode) {
+  document.body.classList.toggle("dark", mode === "dark");
+  localStorage.setItem("theme", mode);
+}
+
+themeToggleBtn.addEventListener("click", () => {
+  const currentTheme = document.body.classList.contains("dark") ? "light" : "dark";
+  setTheme(currentTheme);
+});
+
+// Load theme on start
+(function () {
+  const savedTheme = localStorage.getItem("theme");
+  if (savedTheme) {
+    setTheme(savedTheme);
+  } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    setTheme("dark");
+  }
+})();
+
+// Share button
+shareBtn.addEventListener("click", () => {
+  const url = window.location.href;
+  if (navigator.share) {
+    navigator.share({
+      title: document.title,
+      url: url
+    });
+  } else {
+    navigator.clipboard.writeText(url);
+    shareBtn.textContent = "✅ Copied!";
+    setTimeout(() => (shareBtn.textContent = "🔗"), 2000);
+  }
+});
+
+// Load content on page load
 loadBtn.addEventListener("click", loadArticle);
 saveBtn.addEventListener("click", saveCurrentArticle);
 document.addEventListener("DOMContentLoaded", () => {
