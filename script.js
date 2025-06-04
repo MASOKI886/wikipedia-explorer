@@ -17,8 +17,13 @@ async function loadArticle() {
     const res = await fetch(url);
     const data = await res.json();
     const pages = data.query.categorymembers;
-    const randomPage = pages[Math.floor(Math.random() * pages.length)];
-    fetchArticleByTitle(randomPage.title);
+const filteredPages = pages.filter(p => !p.title.startsWith("Category:") && !p.title.startsWith("List of"));
+if (filteredPages.length === 0) {
+  articleDiv.innerHTML = "<p>No valid articles found in this category.</p>";
+  return;
+}
+const randomPage = filteredPages[Math.floor(Math.random() * filteredPages.length)];
+fetchArticleByTitle(randomPage.title);
   } else {
     url = `https://en.wikipedia.org/w/api.php?action=query&generator=random&grnnamespace=0&prop=extracts|pageimages&piprop=thumbnail&pithumbsize=600&format=json&origin=*`;
     const res = await fetch(url);
