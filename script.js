@@ -142,7 +142,7 @@ shareBtn.addEventListener("click", () => {
     });
   } else {
     navigator.clipboard.writeText(url);
-    shareBtn.textContent = "✅ Copied!";
+    shareBtn.textContent = "✅";
     setTimeout(() => (shareBtn.textContent = "🔗"), 2000);
   }
 });
